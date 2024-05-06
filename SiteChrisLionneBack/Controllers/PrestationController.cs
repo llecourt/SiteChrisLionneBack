@@ -1,7 +1,10 @@
 ﻿using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SiteChrisLionneBack.Models.Image;
 using SiteChrisLionneBack.Models.Prestation;
 using SiteChrisLionneBack.Models.Project;
+using System.Dynamic;
 using System.Text.RegularExpressions;
 
 namespace SiteChrisLionneBack.Controllers
@@ -24,7 +27,7 @@ namespace SiteChrisLionneBack.Controllers
                     item.id = queryResult.GetValue<string>("id");
                     item.title = queryResult.GetValue<string>("title");
                     item.description = queryResult.GetValue<string>("description");
-                    item.image = queryResult.GetValue<string>("image");
+                    item.image = queryResult.GetValue<ImageDTO>("image");
                     prestationsDTO.Add(item);
                 }
             }
@@ -53,14 +56,8 @@ namespace SiteChrisLionneBack.Controllers
                 await ImageStore.deleteFolder(Config.prestationsImagesFolder, docRef.Id);
 
                 prestationDTO.image = await ImageStore.uploadImage(Config.prestationsImagesFolder, docRef.Id, prestation.image);
-                
-                Dictionary<string, object> document = new Dictionary<string, object>
-                {
-                    { "id",  prestationDTO.id },
-                    { "title", prestationDTO.title },
-                    { "description", prestationDTO.description },
-                    { "image", prestationDTO.image },
-                };
+
+                var document = JsonConvert.DeserializeObject<ExpandoObject>(JsonConvert.SerializeObject(prestationDTO));
                 await docRef.SetAsync(document);
             }
             catch (Exception ex) 

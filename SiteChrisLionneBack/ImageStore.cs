@@ -1,6 +1,6 @@
 ﻿using Google.Cloud.Storage.V1;
 using SiteChrisLionneBack.JsonClasses;
-using SiteChrisLionneBack.Models;
+using SiteChrisLionneBack.Models.Image;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -27,32 +27,41 @@ namespace SiteChrisLionneBack
             Console.WriteLine("Cloud storage initialized");
         }
 
-        public static async Task<List<string>> uploadImages(string rootFolderName, string imageFolderName, List<IFormFile> files)
+        public static async Task<List<ImageDTO>> uploadImages(string rootFolderName, string imageFolderName, List<IFormFile> files)
         {
-            List<string> imageNames = new List<string>();
+            List<ImageDTO> images = new List<ImageDTO>();
             foreach (IFormFile file in files)
             {
-                imageNames.Add(await uploadImage(rootFolderName, imageFolderName, file));
+                var imgDTO = await uploadImage(rootFolderName, imageFolderName, file);
+                images.Add(imgDTO);
             }
-            return imageNames;
+            return images;
         }
 
-        public static async Task<string> uploadImage(string rootFolderName, string imageFolderName, IFormFile file)
+        public static async Task<ImageDTO> uploadImage(string rootFolderName, string imageFolderName, IFormFile file)
         {
-            var img = Image.Load(file.OpenReadStream());
-            string fileName = await uploadConvertedImage(rootFolderName, imageFolderName, img);
-            var sizes = new int[] { 1000, 500, 200 };
+            var imgDTO = new ImageDTO();
+            imgDTO.sizes = new List<string>();
 
-            foreach(var size in sizes)
+            var img = SixLabors.ImageSharp.Image.Load(file.OpenReadStream());
+
+            imgDTO.name = await uploadConvertedImage(rootFolderName, imageFolderName, img);
+            imgDTO.sizes.Add("orig");
+
+            var sizes = new int[] { 1000, 500, 200 };
+            var imageH = img.Size.Height;
+
+            foreach (var size in sizes)
             {
-                if (img.Size.Width > size)
+                if (imageH > size)
                 {
                     img.Mutate(x => x.Resize(0, size));
                     await uploadConvertedImage(rootFolderName, imageFolderName, img, "-" + size);
+                    imgDTO.sizes.Add(size.ToString());
                 }
             }
-            
-            return fileName;
+         
+            return imgDTO;
         }
 
         private static async Task<string> uploadConvertedImage(string rootFolderName, string imageFolderName, Image file, string quality = "")
