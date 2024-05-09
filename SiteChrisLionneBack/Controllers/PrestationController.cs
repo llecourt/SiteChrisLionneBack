@@ -26,7 +26,7 @@ namespace SiteChrisLionneBack.Controllers
                     PrestationDTO item = new PrestationDTO();
                     item.id = queryResult.GetValue<string>("id");
                     item.title = queryResult.GetValue<string>("title");
-                    item.description = queryResult.GetValue<string>("description");
+                    item.paragraphs = queryResult.GetValue<List<string>>("paragraphs");
                     item.image = queryResult.GetValue<ImageDTO>("image");
                     prestationsDTO.Add(item);
                 }
@@ -46,7 +46,7 @@ namespace SiteChrisLionneBack.Controllers
             try 
             {
                 prestationDTO.title = prestation.title;
-                prestationDTO.description = prestation.description;
+                prestationDTO.paragraphs = prestation.paragraphs;
 
                 var collection = Database.db.Collection(Config.prestationsCollection);
                 var docRef = collection.Document();
@@ -78,8 +78,8 @@ namespace SiteChrisLionneBack.Controllers
 
                 if (prestation.title != null)
                     await docRef.UpdateAsync("title", prestation.title);
-                if (prestation.description != null)
-                    await docRef.UpdateAsync("description", prestation.description);
+                if (prestation.paragraphs != null)
+                    await docRef.UpdateAsync("description", prestation.paragraphs);
                 if (prestation.image != null)
                     await docRef.UpdateAsync("paragraphs", await ImageStore.uploadImage(Config.prestationsImagesFolder, docRef.Id, prestation.image));
             }
