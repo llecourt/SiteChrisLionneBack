@@ -13,6 +13,7 @@ using System.Dynamic;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SiteChrisLionneBack.Controllers
 {
@@ -55,6 +56,7 @@ namespace SiteChrisLionneBack.Controllers
             return projects;
         }
 
+        [Authorize]
         [HttpPut]
         [Route("create", Name = "CreateProject")]
         public async Task<ProjectDTO> CreateProject([FromForm] ProjectToCreateDTO project)
@@ -88,6 +90,7 @@ namespace SiteChrisLionneBack.Controllers
             return projectDTO;
         }
 
+        [Authorize]
         [HttpPost]
         [Route("edit", Name = "EditProject")]
         public async Task EditProject([FromQuery] string id, [FromForm] ProjectToEditDTO project)
@@ -118,6 +121,7 @@ namespace SiteChrisLionneBack.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("delete", Name = "DeleteProject")]
         public async Task DeleteProject([FromQuery] string id)
@@ -126,6 +130,7 @@ namespace SiteChrisLionneBack.Controllers
             {
                 CollectionReference collection = Database.db.Collection(Config.projectsCollection);
                 var docRef = collection.Document(id);
+                await ImageStore.deleteFolder(Config.projectImagesFolder, docRef.Id);
                 await docRef.DeleteAsync();
             }
             catch (Exception ex)

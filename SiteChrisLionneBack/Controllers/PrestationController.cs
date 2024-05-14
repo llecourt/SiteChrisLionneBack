@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.Firestore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SiteChrisLionneBack.Models.Image;
@@ -38,6 +39,7 @@ namespace SiteChrisLionneBack.Controllers
             return prestationsDTO;
         }
 
+        [Authorize]
         [HttpPut]
         [Route("create", Name = "CreatePrestation")]
         public async Task<PrestationDTO> CreatePrestation([FromForm] PrestationToCreateDTO prestation)
@@ -67,6 +69,7 @@ namespace SiteChrisLionneBack.Controllers
             return prestationDTO;
         }
 
+        [Authorize]
         [HttpPost]
         [Route("edit", Name = "EditPrestation")]
         public async Task EditPrestation([FromQuery] string id, [FromForm] PrestationToEditDTO prestation)
@@ -92,6 +95,7 @@ namespace SiteChrisLionneBack.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("delete", Name = "DeletePrestation")]
         public async Task DeletePrestation([FromQuery] string id)
@@ -100,6 +104,7 @@ namespace SiteChrisLionneBack.Controllers
             {
                 CollectionReference collection = Database.db.Collection(Config.prestationsCollection);
                 var docRef = collection.Document(id);
+                await ImageStore.deleteFolder(Config.prestationsImagesFolder, docRef.Id);
                 await docRef.DeleteAsync();
             }
             catch (Exception ex)
