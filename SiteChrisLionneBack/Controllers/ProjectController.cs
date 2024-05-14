@@ -90,7 +90,7 @@ namespace SiteChrisLionneBack.Controllers
 
         [HttpPost]
         [Route("edit", Name = "EditProject")]
-        public async void EditProject([FromQuery] string id, [FromForm] ProjectToEditDTO project)
+        public async Task EditProject([FromQuery] string id, [FromForm] ProjectToEditDTO project)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace SiteChrisLionneBack.Controllers
 
         [HttpDelete]
         [Route("delete", Name = "DeleteProject")]
-        public async void DeleteProject([FromQuery] string id)
+        public async Task DeleteProject([FromQuery] string id)
         {
             try
             {

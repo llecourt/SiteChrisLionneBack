@@ -69,7 +69,7 @@ namespace SiteChrisLionneBack.Controllers
 
         [HttpPost]
         [Route("edit", Name = "EditPrestation")]
-        public async void EditPrestation([FromQuery] string id, [FromForm] PrestationToEditDTO prestation)
+        public async Task EditPrestation([FromQuery] string id, [FromForm] PrestationToEditDTO prestation)
         {
             try
             {
@@ -79,9 +79,12 @@ namespace SiteChrisLionneBack.Controllers
                 if (prestation.title != null)
                     await docRef.UpdateAsync("title", prestation.title);
                 if (prestation.paragraphs != null)
-                    await docRef.UpdateAsync("description", prestation.paragraphs);
+                    await docRef.UpdateAsync("paragraphs", prestation.paragraphs);
                 if (prestation.image != null)
-                    await docRef.UpdateAsync("paragraphs", await ImageStore.uploadImage(Config.prestationsImagesFolder, docRef.Id, prestation.image));
+                {
+                    await ImageStore.deleteFolder(Config.prestationsImagesFolder, docRef.Id);
+                    await docRef.UpdateAsync("image", await ImageStore.uploadImage(Config.prestationsImagesFolder, docRef.Id, prestation.image));
+                } 
             }
             catch (Exception ex)
             {
@@ -91,7 +94,7 @@ namespace SiteChrisLionneBack.Controllers
 
         [HttpDelete]
         [Route("delete", Name = "DeletePrestation")]
-        public async void DeletePrestation([FromQuery] string id)
+        public async Task DeletePrestation([FromQuery] string id)
         {
             try
             {
