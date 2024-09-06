@@ -1,6 +1,6 @@
 ﻿using Google.Cloud.Firestore;
 using Google.Cloud.Storage.V1;
-using SiteChrisLionneBack.JsonClasses;
+using SiteChrisLionneBack.Models.Serialization;
 using System.Text.Json;
 
 namespace SiteChrisLionneBack
@@ -15,7 +15,7 @@ namespace SiteChrisLionneBack
             if (instance != null) return;
             instance = new Database();
             string jsonString = System.IO.File.ReadAllText(Config.googleCredentialsFileName);
-            GoogleDbSettings dbSettings = JsonSerializer.Deserialize<GoogleDbSettings>(jsonString)!;
+            FirebaseDbSettings dbSettings = JsonSerializer.Deserialize<FirebaseDbSettings>(jsonString)!;
             FirestoreDbBuilder dbBuilder = new FirestoreDbBuilder
             {
                 ProjectId = dbSettings.project_id,

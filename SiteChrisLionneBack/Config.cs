@@ -8,5 +8,6 @@
         public static readonly string prestationsImagesFolder = "Prestations";
         public static readonly string projectsCollection = "projects";
         public static readonly string prestationsCollection = "prestations";
+        public static readonly string usersCollection = "users";
     }
 }

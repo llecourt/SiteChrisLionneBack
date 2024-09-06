@@ -1,6 +1,6 @@
-﻿namespace SiteChrisLionneBack.JsonClasses
+﻿namespace SiteChrisLionneBack.Models.Serialization
 {
-    public class GoogleDbSettings
+    public class FirebaseDbSettings
     {
         public string type { get; set; }
         public string project_id { get; set; }
